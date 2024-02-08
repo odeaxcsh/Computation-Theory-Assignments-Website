@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Your submission of {{ assignment.name }} / {{ question.question_id }}
+{% endblock %}
+
+{% block content %}
+
+{% for data in results  %}
+    <p> {{ data.test }}: {{ data.accept_or_reject }} - {{ data.result }} </p>
+
+{% endfor %}
+
+{% endblock %}
