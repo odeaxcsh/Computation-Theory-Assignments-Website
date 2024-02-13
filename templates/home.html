@@ -5,41 +5,31 @@
 {% endblock %}
 
 {% block content %}
-  {% if user.is_authenticated %}
-    <p>Hi {{ user.username }}!<p>
+  <h1>Hi {{ user.username }}!</h1>
+  <br>
+  <h2>Assignments:</h2>
 
-    <h2>Assignments:</h2>
-    
-    <ul class="list-group">
-      {% for assignemnt in assignments %}
-        <li class="list-group-item d-flex justify-content-between align-items-center {% if assignemnt.active %} list-group-item-info {% endif %}">
-          <div class="ms-2 me-auto">
-            {% if assignemnt.active  %}
-              <a href="{% url 'assignment' assignemnt.pk %}" class="fw-bold"> 
-                {{ assignemnt.name }}
-              </a>
-              <small class="text-muted">due {{ assignemnt.remained.days }} days</small>
-            {% else %}
-              <div class="fw-bold">{{ assignemnt.name }}</div>
-            {% endif %}
-          </div>
+  <ul class="list-group">
+    {% for assignemnt in assignments %}
+      <li class="list-group-item d-flex justify-content-between align-items-center {% if assignemnt.active %}{% endif %}">
+        <div class="ms-2 me-auto">
+          <a href="{% url 'assignment' assignemnt.pk %}" class="fw-bold">{{ assignemnt.name }}</a>
 
-          <span class="badge bg-primary rounded-pill">{{ assignemnt.questions.all|length }}</span>
-        </li>
-      {% endfor %}
-    </ul>
+          {% if assignemnt.active %}
+            <small class="text-muted">due {{ assignemnt.remained.days }} days</small>
+          {% else %}
+            <small style="color: red;">Deadline passed</small>
+          {% endif %}
+        </div>
 
-    <div style="min-height: 1rem;"> </div>
-    <form action="{% url 'logout' %}" method="post">
-      {% csrf_token %}
-      <button class="btn btn-outline-secondary" type="submit">Logout</button>
-    </form>
+        <span class="badge bg-primary rounded-pill">{{ assignemnt.questions.all|length }}</span>
+      </li>
+    {% endfor %}
+  </ul>
 
-
-  {% else %}
-    <p>You are not logged in</p>
-    <p>
-      <a href="{% url 'login' %}">Login</a>
-    </p>
-  {% endif %}
+  <div style="min-height: 1rem;"></div>
+  <form action="{% url 'logout' %}" method="post">
+    {% csrf_token %}
+    <button class="btn btn-outline-secondary" type="submit">Logout</button>
+  </form>
 {% endblock %}

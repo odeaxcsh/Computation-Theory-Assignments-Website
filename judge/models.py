@@ -50,7 +50,7 @@ class Question(models.Model):
 
 
     def __str__(self) -> str:
-        return self.description
+        return f'{self.series_id.name}. Q-{self.question_id}'
 
 
 class TestCase(models.Model):

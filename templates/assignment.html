@@ -17,18 +17,22 @@
         </div>
 
         <p class="p-2 bd-highlight">
-          {% if submissions|dictkey:question.question_id %}
+          {% if submissions|dictkey:question.question_id is not None %}
 
           {{ submissions|dictkey:question.question_id }} %
           {% else %}
             No answer
           {% endif %}
         </p>
-
-        <a class="p-2 bd-highlight" href="{% url 'submission_page' assignment.pk question.question_id %}">Solve</a>
+        
+        {% if active %}
+          <a class="p-2 bd-highlight" href="{% url 'submission_page' assignment.pk question.question_id %}">Solve</a>
+        {% endif %}
       </li>
       
     {% endfor %}
+
+    <h3> You got total of {{ score }} out of {{ all_scores }} </h3>
 
 {% endblock %}
 

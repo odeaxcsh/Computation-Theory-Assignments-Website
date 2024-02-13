@@ -27,7 +27,7 @@ class QuestionAdmin(admin.ModelAdmin):
     model = Question
     readonly_fields = ('question_id', )
     inlines = (TestCaseAdminInlier, )
-
+    
 
 admin.site.register(Assignment, AssignmentAdmin)
 admin.site.register(Question, QuestionAdmin)
