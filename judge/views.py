@@ -45,14 +45,14 @@ def index(request, assignment, question):
         if len(body) > 1024 * 1024 * 1:
             return JsonResponse(content='Fuck you piece of shit; hack your mother')
         
-        if last_submission and (timezone.now() - last_submission.datetime).total_seconds() < 2:
+        if last_submission and (timezone.now() - last_submission.datetime).total_seconds() < 10:
             time_passed = (timezone.now() - last_submission.datetime).total_seconds()
             message = f'''
                 Calm the fuck down
                 I'm not paied enough for this
                 Try again in {round(2 - time_passed)} seconds
             '''
-            return JsonResponse({'wait': round(2 - time_passed), 'message': message})
+            return JsonResponse({'wait': round(10 - time_passed), 'message': message})
 
         machine = json.loads(body)
         tests = question.tests.values_list('test')

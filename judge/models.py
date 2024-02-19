@@ -18,21 +18,21 @@ class Assignment(models.Model):
 
 
 class Question(models.Model):
+    readonly_fields = ('question_id', 'created_at')
     class QuestionTypes(models.TextChoices):
         DFA = "DFA", _("DFA")
         NFA = "NFA", _("NFA")
         PDA = "PDA", _("PDA")
 
 
-    series_id = models.ForeignKey(to=Assignment, on_delete=models.CASCADE, related_name='questions')
-    question_id = models.IntegerField(null=True)
+    assignment = models.ForeignKey(to=Assignment, on_delete=models.CASCADE, related_name='questions')
     description = MarkdownField(
         rendered_field='description_rendered', 
-        validator=VALIDATOR_STANDARD, use_editor=False, use_admin_editor=True
+        validator=VALIDATOR_STANDARD, use_editor=False, use_admin_editor=True, blank=True
     )
     description_rendered = RenderedMarkdownField()
 
-
+    created_at = models.DateTimeField(auto_now_add=True)
 
     type = models.CharField(
         max_length=3,
@@ -43,14 +43,12 @@ class Question(models.Model):
     score = models.IntegerField()
 
 
-    def save(self, *args, **kwargs):
-        if self._state.adding:
-            self.question_id = self.series_id.questions.count()
-        super().save(*args, **kwargs)
-
-
+    @property
+    def question_id(self):
+        return self.assignment.questions.filter(created_at__lt=self.created_at).count() + 1
+    
     def __str__(self) -> str:
-        return f'{self.series_id.name}. Q-{self.question_id}'
+        return f'{self.assignment.name}. Q-{self.question_id}'
 
 
 class TestCase(models.Model):
