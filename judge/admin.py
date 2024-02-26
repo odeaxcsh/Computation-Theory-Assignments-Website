@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 import xlwt
 
 from django.contrib import admin
@@ -8,7 +9,6 @@ import re
 from django.forms import ModelForm
 from judge.models import Assignment, TestCase, Question, Submission
 
-from django.db.models import OuterRef, Subquery, Max, F
 
 
 class TestCaseAdminInlier(admin.TabularInline):
@@ -40,19 +40,33 @@ class AssignmentAdmin(admin.ModelAdmin):
     @admin.action(description="Export Selected Assignemnts")
     def export_to_csv(self, request, assignments):
         book = xlwt.Workbook()
+        pks = [str(pk) for pk, in assignments.values_list('pk')]
+
         for assignment in assignments:
             sheet = book.add_sheet(re.sub('\W+','', assignment.name))
 
-            for j, question in enumerate(assignment.questions.all(), 1):
-                sheet.write(0, j, f'Q{question.question_id}')
-            
+            for question in assignment.questions.all():
+                sheet.write(0, question.question_id, f'Q-{question.question_id}/{question.score}')
+            sheet.write(0, assignment.questions.count() + 1, 'Sum')
+
             for i, user in enumerate(User.objects.all(), 1):
                 sheet.write(i, 0, user.username)
-                for j, question in enumerate(assignment.questions.all(), 1):
+
+                score = 0
+                for question in assignment.questions.all():
                     submission = Submission.objects.filter(user=user, question=question)
                     if submission.count() > 0:
-                        sheet.write(i, j, submission.latest('datetime').result)
-        book.save('book.xls')
+                        submission = submission.latest('datetime')
+                        sheet.write(i, question.question_id, submission.result)
+                        score += submission.result * question.score
+                sheet.write(i, assignment.questions.count() + 1, score / 100)
+        
+        response = HttpResponse(
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": f'''attachment; filename="assignments-{'-'.join(pks)}.xls"'''},
+        )
+        book.save(response)
+        return response
 
 
 class QuestionAdmin(admin.ModelAdmin):

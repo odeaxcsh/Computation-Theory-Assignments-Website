@@ -29,7 +29,7 @@ class Question(models.Model):
     assignment = models.ForeignKey(to=Assignment, on_delete=models.CASCADE, related_name='questions')
     description = MarkdownField(
         rendered_field='description_rendered', 
-        validator=VALIDATOR_STANDARD, use_editor=False, use_admin_editor=True, blank=True
+        validator=VALIDATOR_STANDARD, use_editor=True, use_admin_editor=True, blank=True
     )
     description_rendered = RenderedMarkdownField()
 
@@ -63,10 +63,9 @@ class TestCase(models.Model):
 
 
 class Submission(models.Model):
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='submissions')
     question = models.ForeignKey(to=Question, on_delete=models.CASCADE, related_name='submissions')
     datetime = models.DateTimeField(auto_now_add=True)
     machine = models.JSONField()
     result = models.IntegerField()
-
 
