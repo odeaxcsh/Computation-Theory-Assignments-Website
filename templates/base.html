@@ -15,16 +15,18 @@
         <li class="nav-item">
           <a class="nav-link link-light" href="/">HOME</a>
         </li>
+        {% if not user.is_authenticated %}
         <li class="nav-item">
           <a class="nav-link link-light" href="{% url 'login' %}">Login</a>
         </li>
         <li class="nav-item">
           <a class="nav-link link-light" href="{% url 'signup' %}">Signup</a>
         </li>
+        {% endif %}
         {% if user.is_superuser %}
         <li class="nav-item">
           <a class="nav-link link-light" href="{% url 'admin:index' %}">Admin Panel</a>
-        </li>
+        </li> 
         {% endif %}
       </ul>
 

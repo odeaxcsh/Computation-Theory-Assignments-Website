@@ -19,12 +19,13 @@
 <body>
   <div id="tools">
     <div style="text-align:center;">
-      <button id="saveBtn" onclick="fsm.save();" class="image" title="Save"><img
-          src="{% static 'images/empty.png' %}" /></button>
-      <button id="loadBtn" onclick="fsm.load();" class="image" title="Load" style="margin-right: 20px;"><img
-          src="{% static 'images/empty.png' %}" /></button>
-      <button id="addStateBtn" onclick="fsm.addState();" class="image" title="Add State"><img
-          src="{% static 'images/empty.png' %}" /></button>
+      <button>
+        <a class="image" title="Home" href="{% url 'assignment' assignment.pk %}">
+          <img src="{% static 'images/home.webp' %}" />
+        </a>
+      </button>
+
+        
     </div>
     <label>Test / Debug:</label>
     <input id="testString" type="text" value="" /><br />
@@ -103,21 +104,21 @@
                 wait_time = wait_time - 1;
                 document.getElementById('submit_button').disabled = true;
                 document.getElementById('submit_button').innerHTML = 'Wait ' + wait_time + 's';
-                if(wait_time == 0) {
+                if (wait_time == 0) {
                   document.getElementById('submit_button').disabled = false;
                   document.getElementById('submit_button').innerHTML = 'Submit';
                 } else {
                   setTimeout(tick_wait_time, 1000);
                 }
               }
-              
+
               tick_wait_time();
             }
           },
         })
       }
     </script>
-    
+
     <button onclick="submit()" id="submit_button" style="min-width: 100%;"> Submit </button>
 
 
@@ -129,19 +130,14 @@
   </div>
 
   <div id="mainHolder">
-    <h1>
-      {{ assignment.name }} Problem {{ question.question_id | add:1 }}
-      <!-- Automaton Simulator: -->
-      <button class="delegate" disabled="disabled" title="Deterministic Finite Automaton">DFA</button>
-      <button class="delegate" title="Non-Deterministic Finite Automaton">NFA</button>
-      <!-- <button class="delegate" title="Pushdown Automaton">PDA</button> -->
+    <div id="header">
+      <h1>
+        {{ assignment.name }} Problem {{ question.question_id }}
+      </h1>
+      <h1>You have to draw {{ question.type }}</h1>
+    </div>
 
-      <button id="resetBtn" onclick="fsm.reset();" class="image" title="Reset"><img
-          src="{% static 'images/empty.png' %}" /></button>
-      <select id="examples">
-        <option value="">Examples</option>
-      </select>
-    </h1>
+
     <div id="machineGraph">
       <div id="dfaStatus" style="display:none;"></div>
     </div>
@@ -174,27 +170,10 @@
     </div>
   </div>
 
-  <div id="saveLoadDialog">
-    <div id="saveLoadTabs">
-      <ul>
-        <li><a href="#browserStorage">Browser Storage</a></li>
-        <li><a href="#plaintext">Plaintext</a></li>
-        <li><a href="#shareableURL">Shareable URL</a></li>
-      </ul>
-      <div id="browserStorage">
-        <input id="machineName" type="text" value="Machine Name" title="Machine Name" />
-        <div>
-          <ul id="storedMachines"></ul>
-        </div>
-      </div>
-      <div id="plaintext"><textarea></textarea></div>
-      <div id="shareableURL"><textarea></textarea></div>
-    </div>
-  </div>
+
   <script src="{% static 'js/jquery-1.9.0.min.js' %}"></script>
   <script src="{% static 'js/jquery-ui-1.10.0.custom.min.js' %}"></script>
   <script src="{% static 'js/jquery.jsPlumb-1.3.16-all-min.js' %}"></script>
-  <script src="{% static 'js/fsm_examples.js' %}"></script>
   <script src="{% static 'js/DFA.js' %}"></script>
   <script src="{% static 'js/NFA.js' %}"></script>
   <!-- <script src="{% static 'js/PDA.js' %}"></script> -->
@@ -206,6 +185,7 @@
 
   <script src="{% static 'js/dfa_delegate.js' %}"></script>
   <script src="{% static 'js/nfa_delegate.js' %}"></script>
+
   <!-- <script src="{% static 'js/pda_delegate.js' %}"></script> -->
   <!-- Piwik Analytics -->
   <script type="text/javascript">
@@ -220,13 +200,28 @@
       var d = document, g = d.createElement("script"), s = d.getElementsByTagName("script")[0]; g.type = "text/javascript";
       g.defer = true; g.async = true; g.src = u + "piwik.js"; s.parentNode.insertBefore(g, s);
     })();
-    
+
     $(function () {
-        console.log(getCookie("csrftoken"))
-        $.ajaxSetup({
-          headers: { "X-CSRFToken": getCookie("csrftoken") }
-        });
+      $.ajaxSetup({
+        headers: { "X-CSRFToken": getCookie("csrftoken") }
       });
+    });
+
+
+    window.addEventListener('load', function () {
+      var newDelegate = null;
+      switch ("{{ question.type }}") {
+        case 'DFA': newDelegate = dfa_delegate; break;
+        case 'NFA': newDelegate = nfa_delegate; break;
+        case 'PDA': newDelegate = pda_delegate; break;
+      }
+      fsm.setDelegate(newDelegate);
+      {% if last_submission %}
+        let received_data  = '{{ last_submission.machine|safe }}';
+        fsm.loadSerializedFSM(received_data)
+      {% endif %}
+      
+    })
 
   </script>
   <!-- End Piwik Code -->

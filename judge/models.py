@@ -41,7 +41,7 @@ class Question(models.Model):
         default=QuestionTypes.DFA
     )
 
-    score = models.IntegerField()
+    score = models.IntegerField(default=0)
 
 
     @cached_property
@@ -56,7 +56,6 @@ class TestCase(models.Model):
     question_id = models.ForeignKey(to=Question, on_delete=models.CASCADE, related_name='tests')
     test = models.CharField(max_length=100)
     accept_or_reject = models.BooleanField()
-    show = models.BooleanField()
 
     def __str__(self) -> str:
         return self.test
@@ -69,4 +68,5 @@ class Submission(models.Model):
     datetime = models.DateTimeField(auto_now_add=True)
     machine = models.JSONField()
     result = models.IntegerField()
+
 

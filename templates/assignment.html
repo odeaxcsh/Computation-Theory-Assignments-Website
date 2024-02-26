@@ -8,24 +8,24 @@
 
 {% block content %}
   <ul class="list-group">
-    {% for question in assignment.questions.all %}
+    {% for question in questions.all %}
       <li class="list-group-item justify-content-between d-flex bd-highlight mb-3">
-        <button class="btn btn-primary me-auto p-2 bd-highlight" style="height: 3rem;" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ question.question_id }}">Problem {{ question.question_id }}</button>
+        <button class="btn btn-primary me-auto p-2 bd-highlight" style="height: 3rem;" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ question.pk }}">Problem {{ question.question_id }}</button>
         
-        <div class="collapse" id="collapse{{ question.question_id }}" style="width: 80%;">
+        <div class="collapse" id="collapse{{ question.pk }}" style="width: 80%;">
           {{ question.description_rendered | safe }}
         </div>
 
         <p class="p-2 bd-highlight">
-          {% if submissions|dictkey:question.question_id is not None %}
-            {{ submissions|dictkey:question.question_id }} %
+          {% if question.result is not None %}
+            {{ question.result }} %
           {% else %}
             No answer
           {% endif %}
         </p>
         
         {% if active %}
-          <a class="p-2 bd-highlight" href="{% url 'submission_page' assignment.pk question.pk %}">Solve</a>
+            <a class="p-2 bd-highlight" href="{% url 'submission_page' assignment.pk question.pk %}">Solve</a>
         {% endif %}
       </li>
       

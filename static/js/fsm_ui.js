@@ -70,7 +70,7 @@ var fsm = (function() {
 			saveLoadDialog.parent().find('.ui-dialog-buttonpane button').eq(-1).trigger('click');
 		});
 	};
-
+	
 	var initJsPlumb = function() {
 		jsPlumb.importDefaults({
 			Anchors: ["Continuous", "Continuous"],
@@ -150,15 +150,6 @@ var fsm = (function() {
 
 		// Load the delegate && reset everything
 		self.reset();
-		$('button.delegate').each(function() {
-			if ($(this).html() === model.type) {
-				$(this).click();
-			}
-		});
-
-		// Load Bulk Tests
-		$('#acceptStrings').val(model.bulkTests.accept);
-		$('#rejectStrings').val(model.bulkTests.reject);
 
 		// Create states
 		$.each(model.states, function(stateId, data) {
@@ -233,16 +224,6 @@ var fsm = (function() {
 		initStateEvents();
 		initFSMSelectors();
 		makeSaveLoadDialog();
-
-		var exampleBox = $('#examples').on('change', function() {
-			if ($(this).val() !== '') {
-				loadSerializedFSM(fsm_examples[$(this).val()]);
-				$(this).val('');
-			}
-		});
-		$.each(fsm_examples, function(key, serializedFSM) {
-			$('<option></option>', {value:key}).html(key).appendTo(exampleBox);
-		});
 
 		checkHashForModel();
 	};
@@ -463,7 +444,15 @@ var fsm = (function() {
 		},
 		
 		serializeFSM: function() {
-			return delegate.serialize();
+			let model = delegate.serialize();
+			container.find('div.state').each(function() {
+				var id = $(this).attr('id');
+				if (id !== 'start') {
+					$.extend(model.states[id], $(this).position());
+					$.extend(model.states[id], {displayId: $(this).data('displayid')});
+				}
+			});
+			return model;
 		},
 
 		save: function() {
@@ -516,6 +505,7 @@ var fsm = (function() {
 			$('#plaintext textarea').val(serializedModel);
 			$('#shareableURL textarea').val(window.location.href.split("#")[0] + '#' + encodeURIComponent(serializedModel));
 			saveLoadDialog.dialog('open');
-		}
+		},
+		loadSerializedFSM: loadSerializedFSM
 	};
 })().init();

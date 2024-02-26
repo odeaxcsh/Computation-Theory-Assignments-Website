@@ -25,10 +25,13 @@ def index(request, assignment, question):
 
     assignment = get_object_or_404(Assignment, pk=assignment)
     question = get_object_or_404(assignment.questions, pk=question)
-    
+
     last_submission = Submission.objects.filter(user=user, question=question).order_by('-datetime')
+
     if last_submission.count():
         last_submission = last_submission[0]
+        last_submission.machine = json.dumps(last_submission.machine)
+
     else:
         last_submission = None
         
@@ -73,7 +76,6 @@ def index(request, assignment, question):
                     message = f'Your machine passed {result}% of tests'
 
             except Exception as e:
-                print(str(e))
                 message = f'Your machine is not defined properly!'
                 result = 0
         

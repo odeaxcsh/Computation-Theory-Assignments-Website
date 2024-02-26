@@ -46,29 +46,19 @@ def assignment(request, assignment_id):
 
     active = assignment.end_date >= now
     
-    submissions = Submission.objects.filter(user=user, question__in=OuterRef('pk'))
-
-    submissions = assignment.questions.all().annotate(
-        last_submission=submissions.order_by('-datetime').values("result")[:1]
+    submissions = Submission.objects.filter(user=user, question__in=OuterRef('pk')).order_by('-datetime')[:1]
+    questions = assignment.questions.all().annotate(
+        result=submissions.values('result')
     )
 
-    submissions = submissions.annotate(
-        question_id=Window(
-            expression=DenseRank(),
-            order_by=[
-                F('created_at').desc(),
-        ])
-    )
-
-    last_submissions = dict(submissions.values_list('question_id', 'last_submission'))
-    results = submissions.values_list('score', 'last_submission')
+    results = questions.values_list('score', 'result')
 
     result = sum([score * submission / 100 if submission else 0 for score, submission in results])
     all_scores = sum([score for score, _ in results])
 
     return render(request, 'assignment.html', context={
         'assignment': assignment, 
-        'submissions': last_submissions, 
+        'questions': questions, 
         'active': active,
         'score': result,
         'all_scores': all_scores
