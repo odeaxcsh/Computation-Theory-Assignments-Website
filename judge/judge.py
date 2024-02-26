@@ -3,13 +3,13 @@ from automata.pda import pda, npda
 
 
 def run(machine, tests):
-    print(machine)
     type = machine['type']
     machine = machine[type.lower()]
     initial_state = machine['startState']
     transitions = machine['transitions']
     final_states = machine['acceptStates']
-
+    
+    input_symbols = set().union(*(transition.keys() for transition in transitions.values()))
     model_types = {
         'DFA': dfa.DFA,
         'NFA': nfa.NFA,
@@ -23,7 +23,7 @@ def run(machine, tests):
 
     model = model_types[type](
         states=set(transitions.keys()),
-        input_symbols={'A'},
+        input_symbols=input_symbols,
         initial_state=initial_state,
         final_states=set(final_states),
         transitions=transitions,

@@ -76,7 +76,7 @@ def index(request, assignment, question):
                     message = f'Your machine passed {result}% of tests'
 
             except Exception as e:
-                message = f'Your machine is not defined properly!'
+                message = f'Your machine is not defined properly: {e}'
                 result = 0
         
         submission = Submission(machine=machine, question=question, result=result, user=user)

@@ -52,7 +52,7 @@ class AssignmentAdmin(admin.ModelAdmin):
                     submission = Submission.objects.filter(user=user, question=question)
                     if submission.count() > 0:
                         sheet.write(i, j, submission.latest('datetime').result)
-        book.save('book.xls')   
+        book.save('book.xls')
 
 
 class QuestionAdmin(admin.ModelAdmin):
