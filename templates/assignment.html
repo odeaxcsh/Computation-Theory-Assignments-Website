@@ -18,15 +18,14 @@
 
         <p class="p-2 bd-highlight">
           {% if submissions|dictkey:question.question_id is not None %}
-
-          {{ submissions|dictkey:question.question_id }} %
+            {{ submissions|dictkey:question.question_id }} %
           {% else %}
             No answer
           {% endif %}
         </p>
         
         {% if active %}
-          <a class="p-2 bd-highlight" href="{% url 'submission_page' assignment.pk question.question_id %}">Solve</a>
+          <a class="p-2 bd-highlight" href="{% url 'submission_page' assignment.pk question.pk %}">Solve</a>
         {% endif %}
       </li>
       

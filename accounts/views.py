@@ -16,7 +16,7 @@ class SignUpForm(UserCreationForm):
         fields = ("first_name", "email", "username", "password1", "password2")
         labels={
             "first_name": "Name",
-            "username": "Student number",
+            "username": "Student number as your username",
             "email": "AUT email address"
         }
 
@@ -27,20 +27,6 @@ class SignUpView(CreateView):
     template_name = "registration/signup.html"
 
 
-
-class LoginForm(AuthenticationForm):
-    username = forms.CharField(
-            required=True,
-            widget=forms.TextInput(
-                attrs={
-                    "type": "username",
-                    "placeholder": "Student Number",
-                }
-            ),
-        )
-
-
 class UserLoginView(LoginView):
-    form_class = LoginForm
-    template_name = "registration/login.html"
+     template_name = "registration/login.html"
 

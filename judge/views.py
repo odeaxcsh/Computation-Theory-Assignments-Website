@@ -24,7 +24,7 @@ def index(request, assignment, question):
     user = request.user
 
     assignment = get_object_or_404(Assignment, pk=assignment)
-    question = get_object_or_404(assignment.questions, question_id=question)
+    question = get_object_or_404(assignment.questions, pk=question)
     
     last_submission = Submission.objects.filter(user=user, question=question).order_by('-datetime')
     if last_submission.count():
@@ -50,7 +50,7 @@ def index(request, assignment, question):
             message = f'''
                 Calm the fuck down
                 I'm not paied enough for this
-                Try again in {round(2 - time_passed)} seconds
+                Try again in {round(10 - time_passed)} seconds
             '''
             return JsonResponse({'wait': round(10 - time_passed), 'message': message})
 
@@ -65,8 +65,12 @@ def index(request, assignment, question):
                 expecteds = question.tests.values_list('accept_or_reject')
 
                 outcome = [result == expected[0] for result, expected in zip(results, expecteds)]
-                result = round(sum(outcome) / len(outcome) * 100)
-                message = f'Your machine passed {result}% of tests'
+                if len(outcome) == 0:
+                    result = 0
+                    message = f'No test cases'
+                else:
+                    result = round(sum(outcome) / len(outcome) * 100)
+                    message = f'Your machine passed {result}% of tests'
 
             except Exception as e:
                 print(str(e))

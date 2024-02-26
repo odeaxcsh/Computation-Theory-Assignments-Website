@@ -21,6 +21,11 @@
         <li class="nav-item">
           <a class="nav-link link-light" href="{% url 'signup' %}">Signup</a>
         </li>
+        {% if user.is_superuser %}
+        <li class="nav-item">
+          <a class="nav-link link-light" href="{% url 'admin:index' %}">Admin Panel</a>
+        </li>
+        {% endif %}
       </ul>
 
       {% block content %}

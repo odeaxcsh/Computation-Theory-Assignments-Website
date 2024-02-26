@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 from markdownfield.models import MarkdownField, RenderedMarkdownField
 from markdownfield.validators import VALIDATOR_STANDARD
+from django.utils.functional import cached_property
 
 
 class Assignment(models.Model):
@@ -43,7 +44,7 @@ class Question(models.Model):
     score = models.IntegerField()
 
 
-    @property
+    @cached_property
     def question_id(self):
         return self.assignment.questions.filter(created_at__lt=self.created_at).count() + 1
     

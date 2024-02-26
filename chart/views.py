@@ -6,8 +6,9 @@ from django.http import Http404, HttpResponse
 from judge.models import Assignment, Submission
 
 from django.db.models import F, Case, When, Value, IntegerField
-from django.db.models import OuterRef, Subquery
-
+from django.db.models import OuterRef
+from django.db.models.functions import DenseRank
+from django.db.models import Window, F
 
 # Create your views here.
 
@@ -46,12 +47,20 @@ def assignment(request, assignment_id):
     active = assignment.end_date >= now
     
     submissions = Submission.objects.filter(user=user, question__in=OuterRef('pk'))
+
     submissions = assignment.questions.all().annotate(
         last_submission=submissions.order_by('-datetime').values("result")[:1]
     )
 
+    submissions = submissions.annotate(
+        question_id=Window(
+            expression=DenseRank(),
+            order_by=[
+                F('created_at').desc(),
+        ])
+    )
+
     last_submissions = dict(submissions.values_list('question_id', 'last_submission'))
-    
     results = submissions.values_list('score', 'last_submission')
 
     result = sum([score * submission / 100 if submission else 0 for score, submission in results])
