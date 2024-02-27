@@ -6,7 +6,7 @@ from django.http import HttpResponse, JsonResponse
 
 from django.shortcuts import get_object_or_404
 from .models import Question, Assignment, Submission
-
+from datetime import datetime
 
 import json
 from .judge import run
@@ -55,7 +55,10 @@ def index(request, assignment, question):
                 I'm not paied enough for this
                 Try again in {round(10 - time_passed)} seconds
             '''
-            return JsonResponse({'wait': round(10 - time_passed), 'message': message})
+            return JsonResponse({
+                'wait': round(10 - time_passed), 
+                'message': message.format(),
+            })
 
         machine = json.loads(body)
         tests = question.tests.values_list('test')
@@ -81,6 +84,14 @@ def index(request, assignment, question):
         
         submission = Submission(machine=machine, question=question, result=result, user=user)
         submission.save()
-        return JsonResponse({'message': message})
+
+        date = datetime.strftime(submission.datetime, "%b. %d, %Y %I:%M %p")
+        return JsonResponse({
+            'message': message,
+            'submission': {
+                'datetime': date,
+                'result': submission.result
+            }
+        })
 
         

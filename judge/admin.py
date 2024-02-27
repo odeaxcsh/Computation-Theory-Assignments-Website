@@ -47,19 +47,15 @@ class AssignmentAdmin(admin.ModelAdmin):
 
             for question in assignment.questions.all():
                 sheet.write(0, question.question_id, f'Q-{question.question_id}/{question.score}')
-            sheet.write(0, assignment.questions.count() + 1, 'Sum')
-
+                
             for i, user in enumerate(User.objects.all(), 1):
                 sheet.write(i, 0, user.username)
 
-                score = 0
                 for question in assignment.questions.all():
                     submission = Submission.objects.filter(user=user, question=question)
                     if submission.count() > 0:
                         submission = submission.latest('datetime')
                         sheet.write(i, question.question_id, submission.result)
-                        score += submission.result * question.score
-                sheet.write(i, assignment.questions.count() + 1, score / 100)
         
         response = HttpResponse(
             content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

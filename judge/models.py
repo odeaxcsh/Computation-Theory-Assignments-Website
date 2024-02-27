@@ -54,12 +54,11 @@ class Question(models.Model):
 
 class TestCase(models.Model):
     question_id = models.ForeignKey(to=Question, on_delete=models.CASCADE, related_name='tests')
-    test = models.CharField(max_length=100)
+    test = models.CharField(max_length=100, blank=True)
     accept_or_reject = models.BooleanField()
 
     def __str__(self) -> str:
         return self.test
-
 
 
 class Submission(models.Model):

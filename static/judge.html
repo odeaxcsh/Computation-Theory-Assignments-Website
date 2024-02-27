@@ -55,17 +55,12 @@
 
 
 
-    {% if last_submission %}
     <div style="min-height: 2cm;">
       Submissions:
       <br />
-      <p>{{last_submission.datetime}}</p>
-      <p>{{ last_submission.result }}% of tests passed</p>
+      <p id="submission_time">{{ last_submission.datetime }}</p>
+      <p id="submission_result">{{ last_submission.result }}% of tests passed</p>
     </div>
-    {% endif %}
-
-
-
 
     <div>
       <p id="message">{{ message }}</p>
@@ -113,6 +108,15 @@
               }
 
               tick_wait_time();
+            }
+            
+            console.log(result)
+            if('submission' in result) {
+              console.log(result.submission)
+              $("#submission_result").text(`${result.submission.result}% of tests passed`);
+
+              let date = new Date(result.submission.datetime);
+              $("#submission_time").text(result.submission.datetime);
             }
           },
         })
