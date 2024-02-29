@@ -41,12 +41,12 @@ class Question(models.Model):
         default=QuestionTypes.DFA
     )
 
-    score = models.IntegerField(default=0)
+    score = models.IntegerField(default=1)
 
 
     @cached_property
     def question_id(self):
-        return self.assignment.questions.filter(created_at__lt=self.created_at).count() + 1
+        return self.assignment.questions.filter(pk__lt=self.pk).count() + 1
     
     def __str__(self) -> str:
         return f'{self.assignment.name}. Q-{self.question_id}'

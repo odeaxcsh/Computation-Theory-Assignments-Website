@@ -28,6 +28,5 @@ urlpatterns = [
     path('judge/', include('judge.urls')),
     path("accounts/", include("accounts.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
-    path('nested_admin/', include('nested_admin.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

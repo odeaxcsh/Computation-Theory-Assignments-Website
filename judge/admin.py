@@ -11,13 +11,15 @@ from judge.models import Assignment, TestCase, Question, Submission
 
 
 
-class TestCaseAdminInlier(admin.TabularInline):
-    model = TestCase
-    
-
 class AlwaysChangedModelForm(ModelForm):
     def has_changed(self):
         return not self.instance.pk or super().has_changed()
+    
+
+class TestCaseAdminInlier(admin.TabularInline):
+    extra = 0
+    model = TestCase
+    form = AlwaysChangedModelForm
     
 
 class QuestionAdminInlier(admin.StackedInline):
@@ -36,7 +38,6 @@ class AssignmentAdmin(admin.ModelAdmin):
     inlines = (QuestionAdminInlier, )
 
     actions = ["export_to_csv"]
-
     @admin.action(description="Export Selected Assignemnts")
     def export_to_csv(self, request, assignments):
         book = xlwt.Workbook()

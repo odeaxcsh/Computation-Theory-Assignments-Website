@@ -3,16 +3,16 @@ from automata.pda import pda, npda
 
 
 def run(machine, tests):
+    states = set(machine['states'].keys())
+    
     type = machine['type']
     machine = machine[type.lower()]
     initial_state = machine['startState']
     transitions = machine['transitions']
     final_states = machine['acceptStates']
 
-    states = set(transitions.keys()).union(*(state for out in transitions.values() for state in out.values()))
-
     input_symbols = set().union(*(transition.keys() for transition in transitions.values()))
-
+    
     model_types = {
         'DFA': dfa.DFA,
         'NFA': nfa.NFA,
@@ -23,7 +23,6 @@ def run(machine, tests):
         'stack_symbols': set('#@'),
         'initial_stack_symbol': set()
     } if type == 'PDA' else {}
-
 
     model = model_types[type](
         states=states,
